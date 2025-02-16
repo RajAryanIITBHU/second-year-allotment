@@ -13,6 +13,10 @@ export default function Home() {
       <Building/>
 
    </section>
+   <button onClick={async ()=>{
+    "use server"
+    await signOut()
+   }}>signout</button>
    <ViewTable/>
     </main>
   );
