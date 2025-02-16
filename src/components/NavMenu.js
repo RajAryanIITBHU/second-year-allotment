@@ -45,7 +45,7 @@ const NavMenu = ({ session }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="absolute -right-3 top-[105%] ">
           <DropdownMenuItem >
-            <button onClick={async () => await signOut()}>Logout</button>
+            <button className="w-full " onClick={async () => await signOut()}>Logout</button>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
