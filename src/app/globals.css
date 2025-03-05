@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities{
+
+  .cell {
+    @apply text-center hover:bg-secondary/50 text-xs pt-1 pb-2 justify-evenly flex flex-col relative items-center gap-2;
+  }
+  .cell-r{
+    @apply text-center hover:bg-secondary/50 text-xs justify-evenly px-1 flex-row-reverse flex relative items-center gap-2;
+  }
+  .cell-l{
+    @apply text-center hover:bg-secondary/50 text-xs justify-evenly px-1 flex relative items-center gap-2;
+  }
+
+  .cell span{
+    @apply w-4 h-4 bg-muted rounded
+  }
+  .cell-l span{
+    @apply w-4 h-4 bg-muted rounded
+  }
+  .cell-r span{
+    @apply w-4 h-4 bg-muted rounded
+  }
+
+
+  /* ASIDE */
+  aside ul {
+    @apply flex md:space-y-2 flex-row-reverse md:flex-col justify-evenly max-w-72;
+  }
+
+  aside ul li {
+    @apply md:w-full md:text-right md:pr-8 md:rounded-r-full md:border md:py-3 px-3 py-1.5 cursor-pointer rounded;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

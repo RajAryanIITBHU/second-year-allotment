@@ -9,7 +9,7 @@ const Login = () => {
     <div className="w-full relative h-[100dvh] flex justify-center items-center">
       <div className="w-full max-w-sm h-fit shadow border rounded p-4 flex flex-col -mt-8 gap-4">
         <span className="text-center text-xl font-semibold">Login</span>
-        <Separator />
+        <Separator  className="mb-4"/>
         <Button onClick={async ()=>{
             "use server"
             await signIn("google", {redirectTo: "/"});
@@ -18,6 +18,7 @@ const Login = () => {
           <FaGoogle />
           <span className='font-medium'>Sign In with Google</span>
         </Button>
+        <Separator className="mt-4"/>
       </div>
     </div>
   );
