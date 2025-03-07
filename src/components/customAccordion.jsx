@@ -5,15 +5,32 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useSession } from "next-auth/react";
 
-const CustomAccordion = ({sNo, name, branch, email,isUser}) => {
-  const [isOpen, setIsOpen] = useState(false);
+const CustomAccordion = ({
+  sNo,
+  name,
+  branch,
+  email,
+  isUser,
+  isCapacity,
+  idx,
+  singleAccordianOpen,setSingleAccordianOpen,
+}) => {
+  const {index,isOpen} = singleAccordianOpen
 
   return (
-    <div className="w-full max-w-md mx-auto border-b">
+    <div className="w-full max-w-md mx-auto border-b pb-2">
       <div className="">
         <button
-          className="w-full px-1 pb-3 text-left transition-all flex justify-between items-center outline-none"
-          onClick={() => setIsOpen(!isOpen)}
+          className="w-full px-1 pb-1 text-left transition-all flex justify-between items-center outline-none"
+          onClick={() => {
+            if(isOpen && idx === index){
+
+              setSingleAccordianOpen({ index: undefined, isOpen: false });
+            }else{
+
+              setSingleAccordianOpen({ index: idx, isOpen: true });
+            }
+          }}
         >
           <div className="flex gap-2 items-center text-sm">
             <span>{sNo}.</span>
@@ -32,17 +49,22 @@ const CustomAccordion = ({sNo, name, branch, email,isUser}) => {
           </div>
         </button>
 
-        {isOpen && isUser && (
-          <div className="px-2 pt-1 pb-3  flex gap-4">
-            <Button size="sm" variant="outline">
-              <ArrowUpRight />
-              Request Room
-            </Button>
-            <Button size="sm" variant="outline">
-              <ArrowDownUp size={14} />
-              Request Swap
-            </Button>
-          </div>
+        {isOpen && isUser && idx === index && (
+          <>
+            <span className="mini-font mx-3 !opacity-60">Request</span>
+            <div className="px-2 pt-2 pb-3  flex gap-4">
+              {isCapacity && (
+                <Button size="sm" variant="outline">
+                  <ArrowUpRight />
+                  Room
+                </Button>
+              )}
+              <Button size="sm" variant="outline">
+                <ArrowDownUp size={14} />
+                Swap
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </div>

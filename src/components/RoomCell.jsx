@@ -21,7 +21,11 @@ import { Button } from "./ui/button";
 import CustomAccordion from "./customAccordion";
 import { useSession } from "next-auth/react";
 import { getUserByEmail, updateUser } from "@/actions/userAction";
-import { manageRoomStudents, readSingleRoom, updateRoom } from "@/actions/roomAction";
+import {
+  manageRoomStudents,
+  readSingleRoom,
+  updateRoom,
+} from "@/actions/roomAction";
 import { toast } from "react-toastify";
 import { bookRoom, unbookRoom } from "@/actions/bookingAction";
 import { updateSession } from "@/utils/updateSession";
@@ -35,7 +39,6 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import useModifySearchParam from "@/hooks/useModifySearchParam";
 
-
 const RoomCell = ({ className, data: initialData, session }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,7 +47,7 @@ const RoomCell = ({ className, data: initialData, session }) => {
   const modifySearchParams = useModifySearchParam();
   const { update } = useSession();
   const [LocalData, setLocalData] = useState(initialData);
-  
+  const [singleAccordianOpen, setSingleAccordianOpen] = useState({idx:undefined, isOpen:false});
 
   let {
     allotedStudents,
@@ -57,88 +60,97 @@ const RoomCell = ({ className, data: initialData, session }) => {
   } = LocalData;
 
   const handleBook = async () => {
-    setLoading(true);
-    if (!session?.user?.email) {
-      toast.error("Authentication required");
+    try {
+      setLoading(true);
+
+      if (!session?.user?.email) {
+        toast.error("Authentication required");
+        setLoading(false);
+        return;
+      }
+
+      const result = await bookRoom(roomNo, session.user.email);
+
+      if (result.success) {
+        await update({
+          isAlloted: true,
+          roomAlloted: parseInt(roomNo),
+        });
+
+        const st = {
+          ...session?.user,
+          isAlloted: true,
+          roomAlloted: parseInt(roomNo),
+        };
+
+        setLocalData((prev) => ({
+          ...prev,
+          allotedStudents: allotedStudents + 1,
+          isBooked: allotedStudents + 1 === capacity,
+          students: [...prev.students, st],
+        }));
+        router.refresh();
+
+        setOpen(false);
+        toast.success(`Room ${roomNo} booked successfully!`);
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
       setLoading(false);
-
-      return;
-    }
-
-    const result = await bookRoom(roomNo, session.user.email);
-
-    if (result.success) {
-      await update({
-        isAlloted: true,
-        roomAlloted: parseInt(roomNo),
-      });
-
-      const st = {
-        ...session?.user,
-        isAlloted: true,
-        roomAlloted: parseInt(roomNo),
-      };
-      router.refresh();
-
-      setLocalData((prev) => ({
-        ...prev,
-        allotedStudents: allotedStudents + 1,
-        isBooked: allotedStudents + 1 === capacity,
-        students: [...prev.students, st],
-      }));
-      setLoading(false);
-   
-      toast.success(`Room ${roomNo} booked successfully!`);
-
-      setOpen(false);
-    } else {
-      toast.error(result.error);
     }
   };
 
   const handleUnbook = async () => {
-    setLoading(true);
-    if (!session?.user?.email) {
-      toast.error("Authentication required");
-      setLoading(false);
-      return;
-    }
+   try {
+     setLoading(true);
 
-    const result = await unbookRoom(session.user.email);
+     if (!session?.user?.email) {
+       toast.error("Authentication required");
+       setLoading(false);
+       return;
+     }
+     const result = await unbookRoom(session.user.email);
 
-    if (result.success) {
-      await update({
-        isAlloted: false,
-        roomAlloted: 0,
-      });
-      router.refresh();
+     if (result.success) {
+       await update({
+         isAlloted: false,
+         roomAlloted: 0,
+       });
 
-      setLocalData((prev) => ({
-        ...prev,
-        allotedStudents: allotedStudents - 1,
-        isBooked: allotedStudents - 1 === capacity,
-        students: prev.students.filter((s) => s.email !== session.user.email),
-      }));
-      setLoading(false);
+       setLocalData((prev) => ({
+         ...prev,
+         allotedStudents: allotedStudents - 1,
+         isBooked: allotedStudents - 1 === capacity,
+         students: prev.students.filter((s) => s.email !== session.user.email),
+       }));
+       router.refresh();
+       
+       setOpen(false);
+       toast.success(`Room ${roomNo} unbooked successfully!`);
 
-      toast.success(`Room ${roomNo} unbooked successfully!`);
+     } else {
+       toast.error(result.error);
+     }
+   } catch (error) {
+      console.log(error)
+   }finally{
+       setLoading(false);
 
-      setOpen(false);
-    } else {
-      toast.error(result.error);
-    }
+   }
   };
 
   const handleFindFloor = () => {
-   if (floor !== parseInt(session?.user?.roomAlloted / 100)) {
-     modifySearchParams(
-       "floor",
-       parseInt(session?.user?.roomAlloted / 100).toString()
-     );
-   }
-   else{
-    setOpen(false)
-   }
+    if (floor !== parseInt(session?.user?.roomAlloted / 100)) {
+      modifySearchParams(
+        "floor",
+        parseInt(session?.user?.roomAlloted / 100).toString()
+      );
+    } else {
+      setOpen(false);
+    }
   };
 
   return (
@@ -221,8 +233,9 @@ const RoomCell = ({ className, data: initialData, session }) => {
                     : allotedStudents == 2
                     ? "!bg-blue-700"
                     : allotedStudents === 3
-                    ? "!bg-green-700"
-                    : ""
+                    ? "!bg-green-600"
+                    :  allotedStudents === 4 ? "!bg-green-800" :
+                    ""
                 }`}
               ></div>
               <span>Room: {roomNo}</span>
@@ -255,6 +268,10 @@ const RoomCell = ({ className, data: initialData, session }) => {
                 email={stud.email}
                 sNo={i + 1}
                 isUser={parseInt(roomNo) !== session?.user?.roomAlloted}
+                isCapacity={capacity === allotedStudents}
+                idx={i}
+                setSingleAccordianOpen={(e) => setSingleAccordianOpen(e)}
+                singleAccordianOpen={singleAccordianOpen}
               />
             );
           })}
@@ -311,7 +328,7 @@ const RoomCell = ({ className, data: initialData, session }) => {
                   Already Booked Room:{" "}
                   <span
                     onClick={handleFindFloor}
-                    className="text-foreground/80 hover:underline hover:underline-offset-4 hover:text-foreground cursor-pointer"
+                    className="text-foreground/80 underline underline-offset-4 hover:underline hover:underline-offset-4 hover:text-foreground cursor-pointer"
                   >
                     {session?.user?.roomAlloted}
                   </span>
