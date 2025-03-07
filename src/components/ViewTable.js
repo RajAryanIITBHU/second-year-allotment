@@ -6,9 +6,7 @@ import { addCapacityField, updateRoom } from "@/actions/roomAction";
 import { getUserByEmail } from "@/actions/userAction";
 import { createUser } from "@/actions/userAction";
 import { useSession } from "next-auth/react";
-import { updateSession } from "@/utils/updateSession";
-import { fetchRoomData } from "@/utils/fetchRoomData";
-import useSWR from "swr";
+
 
 
 const ViewTable = () => {
@@ -66,8 +64,9 @@ const ViewTable = () => {
     // }
     try {
       toast.success("Initiated");
+
       
-      console.log(roomData)
+      
 
     } catch (error) {
       toast.error("Err");
