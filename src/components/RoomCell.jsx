@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -23,7 +23,7 @@ import { useSession } from "next-auth/react";
 import { getUserByEmail, updateUser } from "@/actions/userAction";
 import { manageRoomStudents, updateRoom } from "@/actions/roomAction";
 import { toast } from "react-toastify";
-import { bookRoom } from "@/actions/bookingAction";
+import { bookRoom, unbookRoom } from "@/actions/bookingAction";
 import { updateSession } from "@/utils/updateSession";
 import {
   Tooltip,
@@ -31,22 +31,35 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import useModifySearchParam from "@/hooks/useModifySearchParam";
 
-const RoomCell = ({ className, data }) => {
-  const {
+const RoomCell = ({ className, data: initialData, session }) => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  let localEmail = session?.user?.email;
+  const router = useRouter();
+  const modifySearchParams = useModifySearchParam();
+  const { update } = useSession();
+  const [LocalData, setLocalData] = useState(initialData);
+
+  let {
     allotedStudents,
     roomNo,
     floor,
     isBooked,
     possiblyBookedStudents,
     students,
-  } = data;
-
-  const { data: session, update } = useSession();
+    capacity,
+  } = LocalData;
 
   const handleBook = async () => {
+    setLoading(true);
     if (!session?.user?.email) {
       toast.error("Authentication required");
+      setLoading(false);
+
       return;
     }
 
@@ -58,22 +71,87 @@ const RoomCell = ({ className, data }) => {
         roomAlloted: parseInt(roomNo),
       });
 
-      toast.success("Room booked successfully!");
+      const st = {
+        ...session?.user,
+        isAlloted: true,
+        roomAlloted: parseInt(roomNo),
+      };
+      router.refresh();
+
+      setLocalData((prev) => ({
+        ...prev,
+        allotedStudents: allotedStudents + 1,
+        isBooked: allotedStudents + 1 === capacity,
+        students: [...prev.students, st],
+      }));
+      setLoading(false);
+      toast.success(`Room ${roomNo} booked successfully!`);
+
+      setOpen(false);
     } else {
       toast.error(result.error);
     }
   };
 
-  const handleUnbook = () => {};
+  const handleUnbook = async () => {
+    setLoading(true);
+    if (!session?.user?.email) {
+      toast.error("Authentication required");
+      setLoading(false);
+      return;
+    }
+
+    const result = await unbookRoom(session.user.email);
+
+    if (result.success) {
+      await update({
+        isAlloted: false,
+        roomAlloted: 0,
+      });
+      router.refresh();
+
+      setLocalData((prev) => ({
+        ...prev,
+        allotedStudents: allotedStudents - 1,
+        isBooked: allotedStudents - 1 === capacity,
+        students: prev.students.filter((s) => s.email !== session.user.email),
+      }));
+      setLoading(false);
+      toast.success(`Room ${roomNo} unbooked successfully!`);
+
+      setOpen(false);
+    } else {
+      toast.error(result.error);
+    }
+  };
+
+  const handleFindFloor = () => {
+   if (floor !== parseInt(session?.user?.roomAlloted / 100)) {
+     modifySearchParams(
+       "floor",
+       parseInt(session?.user?.roomAlloted / 100).toString()
+     );
+   }
+   else{
+    setOpen(false)
+   }
+  };
 
   return (
     <TooltipProvider>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <Tooltip>
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
-              <div className={`${className} cursor-pointer`}>
-                {data.roomNo}
+              <div
+                className={`${className} cursor-pointer ${
+                  parseInt(roomNo) === session?.user?.roomAlloted ||
+                  students.find((e) => e.email === localEmail)
+                    ? "bg-secondary hover:bg-secondary"
+                    : ""
+                }`}
+              >
+                {roomNo}
                 <span
                   className={
                     allotedStudents === 1
@@ -102,13 +180,14 @@ const RoomCell = ({ className, data }) => {
                 ")"}
             </span>
             <ul className="list-disc pl-4 py-1">
-              {students.map((e, i) => {
-                return (
-                  <li key={e.name}>
-                    {e.name.split(" ").slice(0, -4).join(" ")}
-                  </li>
-                );
-              })}
+              {allotedStudents !== 0 &&
+                students.map((e, i) => {
+                  return (
+                    <li key={e.name}>
+                      {e.name.split(" ").slice(0, -4).join(" ")}
+                    </li>
+                  );
+                })}
               {Array.from({
                 length:
                   (roomNo.slice(1) == "29" ||
@@ -148,7 +227,7 @@ const RoomCell = ({ className, data }) => {
           </DialogHeader>
           <Separator />
           <div className="">
-            <h4 className="text-xs tracking-wide font-medium opacity-75 text-muted-foreground">
+            <h4 className="mini-font">
               Currently booked
               {"(" +
                 allotedStudents +
@@ -171,13 +250,12 @@ const RoomCell = ({ className, data }) => {
                 branch={stud.branch}
                 email={stud.email}
                 sNo={i + 1}
+                isUser={stud.email === session?.user?.email}
               />
             );
           })}
           <div className="">
-            <h4 className="text-xs tracking-wide font-medium opacity-75 text-muted-foreground">
-              Possibly Alloted
-            </h4>
+            <h4 className="mini-font">Possibly Alloted</h4>
           </div>
           <Separator />
 
@@ -197,26 +275,8 @@ const RoomCell = ({ className, data }) => {
             );
           })}
 
-          <div className="flex justify-end">
+          <div className="flex justify-end items-center gap-4">
             {students.find((s) => s.email === session?.user?.email) ? (
-              <Button
-                disabled={
-                  allotedStudents ==
-                  (roomNo.slice(1) == "29" ||
-                  roomNo.slice(1) == "01" ||
-                  roomNo.slice(1) == "58" ||
-                  roomNo.slice(1) == "30"
-                    ? 4
-                    : 3)
-                    ? true
-                    : false
-                }
-                onClick={handleUnbook}
-                variant="outline"
-              >
-                Unbook
-              </Button>
-            ) : (
               <Button
                 disabled={
                   allotedStudents ==
@@ -225,15 +285,56 @@ const RoomCell = ({ className, data }) => {
                     roomNo.slice(1) == "58" ||
                     roomNo.slice(1) == "30"
                       ? 4
-                      : 3) || session?.user?.isAlloted
+                      : 3) || loading
                     ? true
                     : false
                 }
-                onClick={handleBook}
+                onClick={handleUnbook}
                 variant="outline"
               >
-                Book
+                <Loader2
+                  className={`animate-spin  ${!loading ? "hidden" : ""}`}
+                />
+                Unbook
               </Button>
+            ) : (
+              <>
+                <div
+                  className={`mini-font flex-1 ${
+                    !session?.user?.roomAlloted && "hidden"
+                  }`}
+                >
+                  Already Booked Room:{" "}
+                  <span
+                    onClick={handleFindFloor}
+                    className="text-foreground/80 hover:underline hover:underline-offset-4 hover:text-foreground cursor-pointer"
+                  >
+                    {session?.user?.roomAlloted}
+                  </span>
+                </div>
+                <Button
+                  disabled={
+                    allotedStudents ==
+                      (roomNo.slice(1) == "29" ||
+                      roomNo.slice(1) == "01" ||
+                      roomNo.slice(1) == "58" ||
+                      roomNo.slice(1) == "30"
+                        ? 4
+                        : 3) ||
+                    session?.user?.isAlloted ||
+                    loading
+                      ? true
+                      : false
+                  }
+                  onClick={handleBook}
+                  variant="outline"
+                >
+                  <Loader2
+                    className={`animate-spin ${!loading ? "hidden" : ""}`}
+                  />
+                  Book
+                </Button>
+              </>
             )}
           </div>
         </DialogContent>

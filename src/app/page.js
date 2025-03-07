@@ -18,15 +18,12 @@ export default async function Home({searchParams}) {
   
   return (
     <main className="w-full space-y-4">
-   <section className="w-[100dvw] flex min-h-[50dvh] max-md:flex-col max-md:px-4">
-      
-      <Sidebar/>
-      <Building floorNo={floor || "1"} /*rooms={filteredRooms}*//>
+      <section className="w-[100dvw] flex min-h-[50dvh] max-md:flex-col max-md:px-4">
+        <Sidebar floorNum={floor || "1"} />
+        <Building floorNo={floor || "1"} /*rooms={filteredRooms}*/ />
+      </section>
 
-   </section>
-  
-   <ViewTable/>
-   
+      <ViewTable />
     </main>
   );
 }

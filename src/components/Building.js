@@ -3,9 +3,11 @@ import React from "react";
 import { readMultipleRooms } from "@/actions/roomAction";
 import getSortedRoomsByRange from "@/utils/getSortedRoomsByRange";
 import RoomCell from "./RoomCell";
+import { auth } from "@/auth";
 
 const Building = async ({ floorNo }) => {
   const floorRooms = await readMultipleRooms({ floor: parseInt(floorNo) || 1 });
+  const session = await auth()
 
    function roomRange(start, end, r=true) {
     let a = getSortedRoomsByRange(
@@ -28,14 +30,16 @@ const Building = async ({ floorNo }) => {
             {roomRange("11", "17").map((room) => {
               return (
                 <RoomCell
-                  key={room.roomNo}
-                  className={"w-full aspect-[11/7] border-r border-t cell-l"}
-                  data={room}
+                session={session}
+                key={room.roomNo}
+                className={"w-full aspect-[11/7] border-r border-t cell-l"}
+                data={room}
                 />
               );
             })}
 
             <RoomCell
+              session={session}
               key={floorNo + "10"}
               className={
                 "w-full aspect-[11/7] border-t border-r border-b cell-l"
@@ -46,9 +50,10 @@ const Building = async ({ floorNo }) => {
             {roomRange("06", "09").map((room) => {
               return (
                 <RoomCell
-                  key={room.roomNo}
-                  className={"w-full aspect-[11/7] border-r border-t cell-l"}
-                  data={room}
+                session={session}
+                key={room.roomNo}
+                className={"w-full aspect-[11/7] border-r border-t cell-l"}
+                data={room}
                 />
               );
             })}
@@ -61,9 +66,10 @@ const Building = async ({ floorNo }) => {
             {roomRange("18", "24", false).map((room) => {
               return (
                 <RoomCell
-                  key={room.roomNo}
-                  className={
-                    "w-full aspect-[11/7] border-l border-r border-t cell-l"
+                session={session}
+                key={room.roomNo}
+                className={
+                  "w-full aspect-[11/7] border-l border-r border-t cell-l"
                   }
                   data={room}
                 />
@@ -83,9 +89,10 @@ const Building = async ({ floorNo }) => {
               {roomRange("25", "29", false).map((room) => {
                 return (
                   <RoomCell
-                    key={room.roomNo}
-                    className={"h-full aspect-[7/11] border-b border-r cell"}
-                    data={room}
+                  session={session}
+                  key={room.roomNo}
+                  className={"h-full aspect-[7/11] border-b border-r cell"}
+                  data={room}
                   />
                 );
               })}
@@ -95,9 +102,10 @@ const Building = async ({ floorNo }) => {
               {roomRange("01", "05").map((room) => {
                 return (
                   <RoomCell
-                    key={room.roomNo}
-                    className={"h-full aspect-[7/11] border-t border-r cell"}
-                    data={room}
+                  session={session}
+                  key={room.roomNo}
+                  className={"h-full aspect-[7/11] border-t border-r cell"}
+                  data={room}
                   />
                 );
               })}
@@ -112,9 +120,10 @@ const Building = async ({ floorNo }) => {
               {roomRange("30", "34", false).map((room) => {
                 return (
                   <RoomCell
-                    key={room.roomNo}
-                    className={"h-full aspect-[7/11] border-b border-l cell"}
-                    data={room}
+                  session={session}
+                  key={room.roomNo}
+                  className={"h-full aspect-[7/11] border-b border-l cell"}
+                  data={room}
                   />
                 );
               })}
@@ -124,9 +133,10 @@ const Building = async ({ floorNo }) => {
               {roomRange("54", "58").map((room) => {
                 return (
                   <RoomCell
-                    key={room.roomNo}
-                    className={"h-full aspect-[7/11] border-t border-l cell"}
-                    data={room}
+                  session={session}
+                  key={room.roomNo}
+                  className={"h-full aspect-[7/11] border-t border-l cell"}
+                  data={room}
                   />
                 );
               })}
@@ -142,9 +152,10 @@ const Building = async ({ floorNo }) => {
             {roomRange("35", "41").map((room) => {
               return (
                 <RoomCell
-                  key={room.roomNo}
-                  className={
-                    "w-full aspect-[11/7] border-l border-r border-t cell-r"
+                session={session}
+                key={room.roomNo}
+                className={
+                  "w-full aspect-[11/7] border-l border-r border-t cell-r"
                   }
                   data={room}
                 />
@@ -163,14 +174,16 @@ const Building = async ({ floorNo }) => {
             {roomRange("42", "49",false).map((room) => {
               return (
                 <RoomCell
-                  key={room.roomNo}
-                  className={"w-full aspect-[11/7] border-l border-t cell-r"}
-                  data={room}
+                session={session}
+                key={room.roomNo}
+                className={"w-full aspect-[11/7] border-l border-t cell-r"}
+                data={room}
                 />
               );
             })}
 
             <RoomCell
+              session={session}
               key={floorNo + "50"}
               className={
                 "w-full aspect-[11/7] border-t border-l border-b cell-r"
@@ -183,9 +196,10 @@ const Building = async ({ floorNo }) => {
             {roomRange("51", "53", false).map((room) => {
               return (
                 <RoomCell
-                  key={room.roomNo}
-                  className={"w-full aspect-[11/7] border-l border-t cell-r"}
-                  data={room}
+                session={session}
+                key={room.roomNo}
+                className={"w-full aspect-[11/7] border-l border-t cell-r"}
+                data={room}
                 />
               );
             })}

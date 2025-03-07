@@ -33,6 +33,10 @@
   aside ul li {
     @apply md:w-full md:text-right md:pr-8 md:rounded-r-full md:border md:py-3 px-3 py-1.5 cursor-pointer rounded;
   }
+
+  .mini-font {
+    @apply text-xs tracking-wide font-medium opacity-75 text-muted-foreground
+  }
 }
 
 @layer base {

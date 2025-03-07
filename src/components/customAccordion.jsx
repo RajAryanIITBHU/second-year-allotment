@@ -5,9 +5,8 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useSession } from "next-auth/react";
 
-const CustomAccordion = ({sNo, name, branch, email}) => {
+const CustomAccordion = ({sNo, name, branch, email,isUser}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const {data: session} = useSession()
 
   return (
     <div className="w-full max-w-md mx-auto border-b">
@@ -26,14 +25,14 @@ const CustomAccordion = ({sNo, name, branch, email}) => {
             </Badge>
             <ChevronDown
               size={16}
-              className={`${email === session?.user?.email && "hidden"} ${
+              className={`${isUser && "hidden"} ${
                 isOpen ? "rotate-180" : "rotate-0"
               }`}
             />
           </div>
         </button>
 
-        {isOpen && email !== session?.user?.email && (
+        {isOpen && isUser && (
           <div className="px-2 pt-1 pb-3  flex gap-4">
             <Button size="sm" variant="outline">
               <ArrowUpRight />

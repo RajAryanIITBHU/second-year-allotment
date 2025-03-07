@@ -28,12 +28,10 @@ export default async function RootLayout({ children }) {
         ) : (
           <SessionProvider>
             <Navbar />
-            <FloorNumberProvider>
-            {children}
-            </FloorNumberProvider>
+            <FloorNumberProvider>{children}</FloorNumberProvider>
           </SessionProvider>
         )}
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer position="top-right" theme="dark" autoClose={3000} />
       </body>
     </html>
   );

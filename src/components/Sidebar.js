@@ -2,16 +2,21 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-const Sidebar = () => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const floor = searchParams.get("floor") || "1";
-    const [floorNo, setFloorNo] = useState(parseInt(floor));
+const Sidebar = ({ floorNum }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const floor = searchParams.get("floor") || "1";
+  const [floorNo, setFloorNo] = useState(parseInt(floor));
 
-    const setFloor = (floor) => {
-      router.push(`?floor=${floor}`, { scroll: false }); 
-    };
-  
+  const setFloor = (floor) => {
+    router.push(`?floor=${floor}`, { scroll: false });
+  };
+
+  useEffect(() => {
+    setFloorNo(parseInt(floorNum))
+    setFloor(parseInt(floorNum));
+  }, [floorNum]);
+
   return (
     <aside className="w-44 flex md:flex-col py-4 md:mt-12 max-md:w-full max-md:items-center">
       <h3 className="px-2 md:px-4 md:mb-6 max-md:pr-4">Floors</h3>
@@ -20,7 +25,7 @@ const Sidebar = () => {
           value={7}
           onClick={(e) => {
             setFloorNo(e.target.value);
-            setFloor(7)
+            setFloor(7);
           }}
           className={floorNo === 7 ? "bg-muted" : "text-primary/60"}
         >
@@ -30,7 +35,7 @@ const Sidebar = () => {
           value={6}
           onClick={(e) => {
             setFloorNo(e.target.value);
-            setFloor(6)
+            setFloor(6);
           }}
           className={floorNo === 6 ? "bg-muted" : "text-primary/60"}
         >
@@ -40,7 +45,7 @@ const Sidebar = () => {
           value={5}
           onClick={(e) => {
             setFloorNo(e.target.value);
-            setFloor(5)
+            setFloor(5);
           }}
           className={floorNo === 5 ? "bg-muted" : "text-primary/60"}
         >
@@ -50,7 +55,7 @@ const Sidebar = () => {
           value={4}
           onClick={(e) => {
             setFloorNo(e.target.value);
-            setFloor(4)
+            setFloor(4);
           }}
           className={floorNo === 4 ? "bg-muted" : "text-primary/60"}
         >
@@ -60,7 +65,7 @@ const Sidebar = () => {
           value={3}
           onClick={(e) => {
             setFloorNo(e.target.value);
-            setFloor(3)
+            setFloor(3);
           }}
           className={floorNo === 3 ? "bg-muted" : "text-primary/60"}
         >
@@ -70,7 +75,7 @@ const Sidebar = () => {
           value={2}
           onClick={(e) => {
             setFloorNo(e.target.value);
-            setFloor(2)
+            setFloor(2);
           }}
           className={floorNo === 2 ? "bg-muted" : "text-primary/60"}
         >
@@ -80,7 +85,7 @@ const Sidebar = () => {
           value={1}
           onClick={(e) => {
             setFloorNo(e.target.value);
-            setFloor(1)
+            setFloor(1);
           }}
           className={floorNo === 1 ? "bg-muted" : "text-primary/60"}
         >

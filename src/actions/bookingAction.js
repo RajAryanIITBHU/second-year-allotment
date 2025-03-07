@@ -82,7 +82,7 @@ export async function unbookRoom(userEmail) {
         if (!user.isAlloted) throw new Error("No active booking exists");
 
         // 2. Get associated room
-        const room = await Room.findOne({ roomNo: user.roomAlloted }).session(
+        const room = await Room.findOne({ roomNo: user.roomAlloted.toString() }).session(
           session
         );
         if (!room) throw new Error("Associated room not found");
