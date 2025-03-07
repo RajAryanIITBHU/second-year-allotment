@@ -1,9 +1,9 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import User from "./model/User";
 import dbConnect from "./lib/mongodb";
-import { createUser } from "./actions/createUser";
-import { getUserByEmail } from "./actions/getUserByEmail";
+import { getUserByEmail } from "./actions/userAction";
+import { createUser } from "./actions/userAction";
+
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [Google],
@@ -19,12 +19,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const existingUser = await getUserByEmail(profile.email);
 
           if (!existingUser?.success) {
+            const branch =
+              profile.name.split(" ")[profile.name.split(" ").length - 2];
 
             const creationResult = await createUser({
               name: profile.name,
               email: profile.email,
               image: profile.picture,
-              branch: "NA", // Explicit default
+              branch,
               isAlloted: false,
               roomAlloted: 0,
             });
@@ -43,28 +45,46 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user,trigger }) {
       try {
         await dbConnect();
+
         if (user) {
-         
           token = {
             ...token,
+            id: user.id,
             name: user.name,
             email: user.email,
-            picture: user.image,
+            image: user.image,
+            branch: user.branch,
+            isAlloted: user.isAlloted,
+            roomAlloted: user.roomAlloted,
           };
         }
 
+        if (trigger === "update") {
+          const updatedUser = await getUserByEmail(token.email);
+          if (updatedUser?.success) {
+            token.isAlloted = updatedUser.data.isAlloted;
+            token.roomAlloted = updatedUser.data.roomAlloted;
+          }
+        }
+       
         const userResult = await getUserByEmail(token.email);
         if (userResult?.success && userResult.data) {
-          return {
+          token = {
             ...token,
             ...userResult.data,
-            id: userResult.data._id?.toString(),
-            createdAt: userResult.data.createdAt.toISOString(),
+            id: userResult.data._id,
+            branch: userResult.data.branch,
+            isAlloted: userResult.data.isAlloted,
+            roomAlloted: userResult.data.roomAlloted,
           };
         }
+
+         
+
+
         return token;
       } catch (error) {
         console.error("JWT error:", error);
@@ -73,25 +93,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          ...token,
-          id: token.id,
-          createdAt: token.createdAt,
-        },
+      session.user = {
+        ...session.user,
+        id: token.id,
+        name: token.name,
+        email: token.email,
+        image: token.image,
+        branch: token.branch,
+        isAlloted: token.isAlloted,
+        roomAlloted: token.roomAlloted,
       };
+      return session;
     },
   },
-
   pages: {
     signIn: "/",
     error: "/",
     signOut: "/",
   },
-
-  // Important for production
-  debug: process.env.NODE_ENV !== "development",
+  debug: process.env.NODE_ENV !== "production",
   secret: process.env.AUTH_SECRET,
 });

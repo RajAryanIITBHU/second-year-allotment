@@ -4,16 +4,7 @@ import { signIn, signOut } from "../auth";
 import Sidebar from "@/components/Sidebar";
 import Building from "@/components/Building";
 import ViewTable from "@/components/ViewTable";
-import { Button } from "@/components/ui/button";
-import { toast } from "react-toastify";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase";
-import { cache } from "react";
 
-import User from "@/model/User";
-import dbConnect from "@/lib/mongodb";
-import { createUser } from "@/actions/createUser";
-import { readMultipleRooms } from "@/actions/roomAction";
 
 // const getRooms = cache(async () => {
 //   console.log("Fetching rooms from Firestore...");

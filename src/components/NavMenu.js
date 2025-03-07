@@ -10,14 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "next-auth/react";
+import { Button } from "./ui/button";
+import { Bell, LogOut } from "lucide-react";
+import { Separator } from "./ui/separator";
 
 
 
 
 const NavMenu = ({ session }) => {
   return (
-    <div className="flex gap-4 items-center">
-      <div className="flex flex-col">
+    <div className="flex gap-3 sm:gap-4 items-center">
+      <div className="sm:flex flex-col hidden ">
         <span>{session?.user?.name.split(" ").slice(0, -4).join(" ")}</span>
         <span className="text-xs font-medium text-muted-foreground">
           {
@@ -27,9 +30,12 @@ const NavMenu = ({ session }) => {
           }
         </span>
       </div>
+      <button className="p-1.5 border rounded focus:bg-muted">
+        <Bell size={18}/>
+      </button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className=" w-6 md:w-8 h-6 md:h-8 relative rounded-full overflow-hidden">
+          <div className=" w-7 md:w-8 h-7 md:h-8 relative rounded overflow-hidden">
             <Image
               src={
                 session?.user?.image ||
@@ -43,9 +49,29 @@ const NavMenu = ({ session }) => {
             />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="absolute -right-3 top-[105%] ">
-          <DropdownMenuItem >
-            <button className="w-full " onClick={async () => await signOut()}>Logout</button>
+        <DropdownMenuContent className="absolute -right-3 top-[105%] w-[180px]">
+          <DropdownMenuItem className="cursor-not-allowed sm:hidden">
+            <div className="flex flex-col items-start gap-0.5">
+              <span>
+                {session?.user?.name.split(" ").slice(0, -4).join(" ")}
+              </span>
+              <span className="text-xs font-medium text-muted-foreground">
+                {
+                  session?.user?.name.split(" ")[
+                    session?.user?.name.split(" ").length - 2
+                  ]
+                }
+              </span>
+            </div>
+          </DropdownMenuItem>
+          <Separator className="my-2 sm:hidden" />
+          <DropdownMenuItem>
+            <button
+              className="w-full text-left flex gap-2 items-center py-0.5"
+              onClick={async () => await signOut()}
+            >
+              <LogOut size={16} /> <span>Logout</span>
+            </button>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -2,23 +2,24 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { toast } from "react-toastify";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import { createUser } from "@/actions/createUser";
-import { getUserByEmail } from "@/actions/getUserByEmail";
-import { addRoom, deleteRoom, updateRoom } from "@/actions/roomAction";
+import { addCapacityField, updateRoom } from "@/actions/roomAction";
+import { getUserByEmail } from "@/actions/userAction";
+import { createUser } from "@/actions/userAction";
+import { useSession } from "next-auth/react";
+import { updateSession } from "@/utils/updateSession";
 
 const ViewTable = () => {
+  const { data: session, update } = useSession();
 
-  const sub = async (room,floor) => {
+  const sub = async (room, floor) => {
     try {
-      console.log("executing", room)
-      const result = await updateRoom(room,{
+      console.log("executing", room);
+      const result = await updateRoom(room, {
         floor,
       });
 
       if (result.success) {
-        console.log(result.data.roomNo, result.data.floor); 
+        console.log(result.data.roomNo, result.data.floor);
         // toast.success("Room added successfully");
       } else {
         toast.error(result.message);
@@ -28,41 +29,60 @@ const ViewTable = () => {
     }
   };
 
+  const reloadSession = () => {
+    const event = new Event("visibilitychange");
+    document.dispatchEvent(event);
+  };
 
-  const ct =async ()=>{
-    let a =100;
-    let b=1;
+  const ct = async () => {
+    let a = 100;
+    let b = 1;
 
     // while(a<=700){
     //   b=1
 
     //   while(b<=58){
     //     let s = (a+b).toString()
-    //     // try {
-    //     //   let r = await updateRoom(s, {
-    //     //     floor: a/100,
-    //     //   });
+    //     try {
+    //       let r = await updateRoom(s, {
+    //         capacity: b === 1 || b === 29 || b === 30 || b === 58 ? 4: 3,
+    //       });
 
-    //     //   console.log(r.data.floor, r.data.roomNo);
-    //     // } catch (error) {
-    //     //   console.log("Error");
-    //     // }
+    //       console.log(r.data.capacity, r.data.roomNo);
+    //     } catch (error) {
+    //       console.log("Error");
+    //     }
 
-        
-       
     //     b+=1
     //   }
 
     //   a+=100
     // }
+    try {
+      toast.success("Initiated");
+      await update({
+        isAlloted: true,
+        roomAlloted: 101
+      })
+        .then((res) => {
+          console.log(res);
 
+          toast.success("finished");
+          reloadSession();
 
-  }
+        })
+        .catch((err) => console.log("object", err));
+      console.log(session?.user);
+    } catch (error) {
+      toast.error("Err");
+      console.log(error);
+    }
+  };
 
   return (
     <section className="w-full p-4">
-    Table
-    <Button onClick={ct}>Add Room</Button>
+      Table
+      <Button onClick={ct}>Add Room</Button>
     </section>
   );
 };

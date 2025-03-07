@@ -1,23 +1,41 @@
 import mongoose from "mongoose";
 
-const StudentSchema = new mongoose.Schema({
-  branch: {
-    type: String,
-    default: "NA",
+const StudentSchema = new mongoose.Schema(
+  {
+    branch: {
+      type: String,
+      default: "NA",
+    },
+    email: {
+      type: String,
+      default: "NA",
+    },
+    name: {
+      type: String,
+      default: "NA",
+    },
+    roomAlloted: {
+      type: Number,
+      default: 0,
+    },
   },
-  email: {
-    type: String,
-    default: "NA",
-  },
-  name: {
-    type: String,
-    default: "NA",
-  },
-  roomAlloted: {
-    type: Number,
-    default: 0,
-  },
-});
+  {
+    toJSON: {
+      transform: function (doc, ret) {
+        ret.id = ret._id.toString();
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      transform: function (doc, ret) {
+        ret.id = doc._id.toString();
+        delete ret._id;
+        return ret;
+      },
+    },
+  }
+);
 
 const RoomSchema = new mongoose.Schema(
   {
@@ -33,6 +51,12 @@ const RoomSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    capacity: {
+      type: Number,
+      required: true,
+      default: 3,
+      min: [1, "Capacity cannot be less than 1"],
+    },
     possiblyBookedStudents: [StudentSchema],
     students: [StudentSchema],
     roomNo: {
@@ -41,7 +65,7 @@ const RoomSchema = new mongoose.Schema(
       unique: true,
     },
   },
-  
+
   {
     timestamps: true,
     toJSON: {

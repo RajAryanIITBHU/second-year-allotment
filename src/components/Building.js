@@ -14,6 +14,7 @@ const Building = async ({ floorNo }) => {
       floorNo + end,
       { sort: true, reverse: r }
     );
+    a = JSON.parse(JSON.stringify(a))
     return a
   }
 
