@@ -44,14 +44,6 @@ const RoomCell = ({ className, data: initialData, session }) => {
   const modifySearchParams = useModifySearchParam();
   const { update } = useSession();
   const [LocalData, setLocalData] = useState(initialData);
-
-
-
-  // REMOVAL
-  useEffect(()=>{
-    setLocalData(initialData)
-  },[initialData])
-  // END
   
 
   let {
@@ -95,6 +87,7 @@ const RoomCell = ({ className, data: initialData, session }) => {
         students: [...prev.students, st],
       }));
       setLoading(false);
+   
       toast.success(`Room ${roomNo} booked successfully!`);
 
       setOpen(false);
@@ -127,6 +120,7 @@ const RoomCell = ({ className, data: initialData, session }) => {
         students: prev.students.filter((s) => s.email !== session.user.email),
       }));
       setLoading(false);
+
       toast.success(`Room ${roomNo} unbooked successfully!`);
 
       setOpen(false);

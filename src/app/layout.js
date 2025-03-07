@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import { SessionProvider } from "next-auth/react";
 import "react-toastify/dist/ReactToastify.css";
 import { FloorNumberProvider } from "@/context/FloorCountContext";
+import { SWRConfig } from "swr";
 
 export const metadata = {
   title: "Second Year Allotment | Shatish Dhawan",
@@ -26,10 +27,13 @@ export default async function RootLayout({ children }) {
         {!session?.user ? (
           <Login />
         ) : (
+          <SWRConfig value={{ refreshInterval: 5000 }}>
+
           <SessionProvider>
             <Navbar />
             <FloorNumberProvider>{children}</FloorNumberProvider>
           </SessionProvider>
+          </SWRConfig>
         )}
         <ToastContainer position="top-right" theme="dark" autoClose={3000} />
       </body>

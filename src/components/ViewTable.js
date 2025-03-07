@@ -36,14 +36,7 @@ const ViewTable = () => {
     document.dispatchEvent(event);
   };
 
-   const { data: roomData, mutate } = useSWR(
-     `${631}`,
-     fetchRoomData,
-     {
-       fallbackData: {roomNo:631, error:"Error"},
-       refreshInterval: 5000, // Poll every 5 seconds
-     }
-   );
+  
 
   
 
