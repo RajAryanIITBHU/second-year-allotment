@@ -35,6 +35,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import useModifySearchParam from "@/hooks/useModifySearchParam";
 
+
 const RoomCell = ({ className, data: initialData, session }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,8 +45,14 @@ const RoomCell = ({ className, data: initialData, session }) => {
   const { update } = useSession();
   const [LocalData, setLocalData] = useState(initialData);
 
-   
 
+
+  // REMOVAL
+  useEffect(()=>{
+    setLocalData(initialData)
+  },[initialData])
+  // END
+  
 
   let {
     allotedStudents,

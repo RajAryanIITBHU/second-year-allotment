@@ -7,6 +7,9 @@ import { getUserByEmail } from "@/actions/userAction";
 import { createUser } from "@/actions/userAction";
 import { useSession } from "next-auth/react";
 import { updateSession } from "@/utils/updateSession";
+import { fetchRoomData } from "@/utils/fetchRoomData";
+import useSWR from "swr";
+
 
 const ViewTable = () => {
   const { data: session, update } = useSession();
@@ -20,7 +23,6 @@ const ViewTable = () => {
 
       if (result.success) {
         console.log(result.data.roomNo, result.data.floor);
-        // toast.success("Room added successfully");
       } else {
         toast.error(result.message);
       }
@@ -33,6 +35,17 @@ const ViewTable = () => {
     const event = new Event("visibilitychange");
     document.dispatchEvent(event);
   };
+
+   const { data: roomData, mutate } = useSWR(
+     `${631}`,
+     fetchRoomData,
+     {
+       fallbackData: {roomNo:631, error:"Error"},
+       refreshInterval: 5000, // Poll every 5 seconds
+     }
+   );
+
+  
 
   const ct = async () => {
     let a = 100;
@@ -60,19 +73,9 @@ const ViewTable = () => {
     // }
     try {
       toast.success("Initiated");
-      await update({
-        isAlloted: true,
-        roomAlloted: 101
-      })
-        .then((res) => {
-          console.log(res);
+      
+      console.log(roomData)
 
-          toast.success("finished");
-          reloadSession();
-
-        })
-        .catch((err) => console.log("object", err));
-      console.log(session?.user);
     } catch (error) {
       toast.error("Err");
       console.log(error);
