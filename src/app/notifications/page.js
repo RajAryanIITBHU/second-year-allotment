@@ -21,6 +21,7 @@ const page = () => {
         objectFit="cover"
         alt="no-notification"
         className="grayscale opacity-40 mx-auto pt-16 pb-6"
+        priority
       />
       <div className="font-semibold tracking-wide text-muted-foreground/60 mx-auto text-center text-lg">
         No Notifications
