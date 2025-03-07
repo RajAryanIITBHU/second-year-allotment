@@ -12,7 +12,7 @@ const StudentSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      default: "NA",
+      default: "NA", 
     },
     roomAlloted: {
       type: Number,

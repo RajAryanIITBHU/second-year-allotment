@@ -21,7 +21,7 @@ import { Button } from "./ui/button";
 import CustomAccordion from "./customAccordion";
 import { useSession } from "next-auth/react";
 import { getUserByEmail, updateUser } from "@/actions/userAction";
-import { manageRoomStudents, updateRoom } from "@/actions/roomAction";
+import { manageRoomStudents, readSingleRoom, updateRoom } from "@/actions/roomAction";
 import { toast } from "react-toastify";
 import { bookRoom, unbookRoom } from "@/actions/bookingAction";
 import { updateSession } from "@/utils/updateSession";
@@ -43,6 +43,9 @@ const RoomCell = ({ className, data: initialData, session }) => {
   const modifySearchParams = useModifySearchParam();
   const { update } = useSession();
   const [LocalData, setLocalData] = useState(initialData);
+
+   
+
 
   let {
     allotedStudents,
@@ -250,7 +253,7 @@ const RoomCell = ({ className, data: initialData, session }) => {
                 branch={stud.branch}
                 email={stud.email}
                 sNo={i + 1}
-                isUser={stud.email === session?.user?.email}
+                isUser={parseInt(roomNo) !== session?.user?.roomAlloted}
               />
             );
           })}

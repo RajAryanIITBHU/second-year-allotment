@@ -25,7 +25,7 @@ const CustomAccordion = ({sNo, name, branch, email,isUser}) => {
             </Badge>
             <ChevronDown
               size={16}
-              className={`${isUser && "hidden"} ${
+              className={`${!isUser && "hidden"} ${
                 isOpen ? "rotate-180" : "rotate-0"
               }`}
             />
