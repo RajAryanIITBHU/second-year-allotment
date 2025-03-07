@@ -1,5 +1,42 @@
 import mongoose from "mongoose";
 
+// const NotificationSchema = new mongoose.Schema(
+//   {
+//     branch: {
+//       type: String,
+//       default: "NA",
+//     },
+//     email: {
+//       type: String,
+//       default: "NA",
+//     },
+//     name: {
+//       type: String,
+//       default: "NA", 
+//     },
+//     roomAlloted: {
+//       type: Number,
+//       default: 0,
+//     },
+//   },
+//   {
+//     toJSON: {
+//       transform: function (doc, ret) {
+//         ret.id = ret._id.toString();
+//         delete ret._id;
+//         return ret;
+//       },
+//     },
+//     toObject: {
+//       transform: function (doc, ret) {
+//         ret.id = doc._id.toString();
+//         delete ret._id;
+//         return ret;
+//       },
+//     },
+//   }
+// );
+
 const UserSchema = new mongoose.Schema(
   {
     name: String,

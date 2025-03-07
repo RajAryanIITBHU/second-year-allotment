@@ -13,9 +13,7 @@ import { signOut } from "next-auth/react";
 import { Button } from "./ui/button";
 import { Bell, LogOut } from "lucide-react";
 import { Separator } from "./ui/separator";
-
-
-
+import Link from "next/link";
 
 const NavMenu = ({ session }) => {
   return (
@@ -30,9 +28,9 @@ const NavMenu = ({ session }) => {
           }
         </span>
       </div>
-      <button className="p-1.5 border rounded focus:bg-muted">
+      <Link href={"/notifications"} className="p-1.5 sm:p-2 border rounded hover:bg-muted/70 focus:bg-muted">
         <Bell size={18}/>
-      </button>
+      </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className=" w-7 md:w-8 h-7 md:h-8 relative rounded overflow-hidden">
