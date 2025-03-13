@@ -6,7 +6,6 @@ if (!MONGODB_URI) {
   throw new Error("❌ Please define MONGODB_URI in the environment variables");
 }
 
-// Global connection cache (works across API calls & hot reloads)
 let cached = (global).mongoose || { conn: null, promise: null };
 (global).mongoose = cached;
 
@@ -25,8 +24,8 @@ async function dbConnect() {
     cached.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
       autoIndex: process.env.NODE_ENV !== "production",
-      maxPoolSize: 10, // Limits connection pool
-      minPoolSize: 1, // Keeps at least 1 open connection
+      maxPoolSize: 10,
+      minPoolSize: 1,
     });
   }
 

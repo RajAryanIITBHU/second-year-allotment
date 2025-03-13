@@ -272,6 +272,8 @@ const RoomCell = ({ className, data: initialData, session }) => {
                 idx={i}
                 setSingleAccordianOpen={(e) => setSingleAccordianOpen(e)}
                 singleAccordianOpen={singleAccordianOpen}
+                roomNo={roomNo}
+                userRoomNo={session?.user?.roomAlloted}
               />
             );
           })}
@@ -299,17 +301,7 @@ const RoomCell = ({ className, data: initialData, session }) => {
           <div className="flex justify-end items-center gap-4">
             {students.find((s) => s.email === session?.user?.email) ? (
               <Button
-                disabled={
-                  allotedStudents ==
-                    (roomNo.slice(1) == "29" ||
-                    roomNo.slice(1) == "01" ||
-                    roomNo.slice(1) == "58" ||
-                    roomNo.slice(1) == "30"
-                      ? 4
-                      : 3) || loading
-                    ? true
-                    : false
-                }
+                disabled={loading}
                 onClick={handleUnbook}
                 variant="outline"
               >

@@ -4,6 +4,18 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useSession } from "next-auth/react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const CustomAccordion = ({
   sNo,
@@ -13,9 +25,20 @@ const CustomAccordion = ({
   isUser,
   isCapacity,
   idx,
+  roomNo,
+  userRoomNo,
   singleAccordianOpen,setSingleAccordianOpen,
 }) => {
   const {index,isOpen} = singleAccordianOpen
+
+
+  const handleRequestRoom = ()=>{
+
+  }
+
+  const handleSwapRoom = ()=>{
+    
+  }
 
   return (
     <div className="w-full max-w-md mx-auto border-b pb-2">
@@ -23,11 +46,9 @@ const CustomAccordion = ({
         <button
           className="w-full px-1 pb-1 text-left transition-all flex justify-between items-center outline-none"
           onClick={() => {
-            if(isOpen && idx === index){
-
+            if (isOpen && idx === index) {
               setSingleAccordianOpen({ index: undefined, isOpen: false });
-            }else{
-
+            } else {
               setSingleAccordianOpen({ index: idx, isOpen: true });
             }
           }}
@@ -54,15 +75,62 @@ const CustomAccordion = ({
             <span className="mini-font mx-3 !opacity-60">Request</span>
             <div className="px-2 pt-2 pb-3  flex gap-4">
               {isCapacity && (
-                <Button size="sm" variant="outline">
-                  <ArrowUpRight />
-                  Room
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline">
+                      <ArrowUpRight />
+                      Room
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="max-w-[400px]">
+                    <AlertDialogHeader className="pb-4">
+                      <AlertDialogTitle className="flex items-center gap-1">
+                        <ArrowUpRight size={24} />
+                        Request Room {roomNo}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to request this room from{" "}
+                        {`${name} (${branch.slice(0, 3).toUpperCase()}).`}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="">
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleRequestRoom}>
+                        Request
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
-              <Button size="sm" variant="outline">
-                <ArrowDownUp size={14} />
-                Swap
-              </Button>
+              {userRoomNo !== 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline" className>
+                      <ArrowDownUp size={14} />
+                      Swap
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="max-w-[400px]">
+                    <AlertDialogHeader className="pb-4">
+                      <AlertDialogTitle className="flex items-center gap-1">
+                        <ArrowDownUp size={20} />
+                        Request to Swap Room {roomNo} from {userRoomNo}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to swap your Room {userRoomNo}{" "}
+                        with Room {roomNo} currently occupied by
+                        {` ${name} (${branch.slice(0, 3).toUpperCase()}).`}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleSwapRoom}>
+                        Swap
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
           </>
         )}
