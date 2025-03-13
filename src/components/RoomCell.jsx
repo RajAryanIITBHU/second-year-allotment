@@ -155,7 +155,13 @@ const RoomCell = ({ className, data: initialData, session }) => {
 
   return (
     <TooltipProvider>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={(isOpen) => {
+          setOpen(isOpen);
+          if (!isOpen) setSingleAccordianOpen({idx: undefined, isOpen: false});
+        }}
+      >
         <Tooltip>
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
@@ -234,8 +240,9 @@ const RoomCell = ({ className, data: initialData, session }) => {
                     ? "!bg-blue-700"
                     : allotedStudents === 3
                     ? "!bg-green-600"
-                    :  allotedStudents === 4 ? "!bg-green-800" :
-                    ""
+                    : allotedStudents === 4
+                    ? "!bg-green-800"
+                    : ""
                 }`}
               ></div>
               <span>Room: {roomNo}</span>

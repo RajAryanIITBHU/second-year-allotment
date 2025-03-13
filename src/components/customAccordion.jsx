@@ -46,10 +46,12 @@ const CustomAccordion = ({
         <button
           className="w-full px-1 pb-1 text-left transition-all flex justify-between items-center outline-none"
           onClick={() => {
-            if (isOpen && idx === index) {
-              setSingleAccordianOpen({ index: undefined, isOpen: false });
-            } else {
-              setSingleAccordianOpen({ index: idx, isOpen: true });
+            if (isCapacity || userRoomNo !== 0) {
+              if (isOpen && idx === index) {
+                setSingleAccordianOpen({ index: undefined, isOpen: false });
+              } else {
+                setSingleAccordianOpen({ index: idx, isOpen: true });
+              }
             }
           }}
         >
@@ -63,9 +65,9 @@ const CustomAccordion = ({
             </Badge>
             <ChevronDown
               size={16}
-              className={`${!isUser && "hidden"} ${
-                isOpen ? "rotate-180" : "rotate-0"
-              }`}
+              className={`${
+                isCapacity || userRoomNo !== 0 ? !isUser ? "hidden" : "" : "hidden"
+              } ${isOpen ? "rotate-180" : "rotate-0"}`}
             />
           </div>
         </button>
